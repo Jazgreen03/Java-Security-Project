@@ -1,0 +1,102 @@
+package ArtistTheaterSystem;
+
+public class TheaterSystem {
+
+    public class NoSeatAvailableException extends Exception {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public NoSeatAvailableException(String message) {
+            super(message);
+        }
+    }
+
+    public class Ticket {
+        private String date;
+        private String time;
+        private int numberOfSeats;
+        private int[] seatNumbers;
+        private boolean[] seatAvailability;
+
+        public Ticket(String date, String time) {
+            this.setDate(date);
+            this.setTime(time);
+            this.numberOfSeats = 30; // Predetermined 
+            initializeSeats();
+        }
+
+        private void initializeSeats() {
+            seatNumbers = new int[numberOfSeats];
+            seatAvailability = new boolean[numberOfSeats];
+            for (int i = 0; i < numberOfSeats; i++) {
+                seatNumbers[i] = i + 1; // Seat numbers start from 1
+                seatAvailability[i] = true; // All seats are available at first
+            }
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+    }
+
+    private Ticket ticket;
+
+    public TheaterSystem(String date, String time) {
+        this.ticket = new Ticket(date, time);
+    }
+
+    public boolean isArtistTheaterFull() {
+        for (boolean seat : ticket.seatAvailability) {
+            if (seat) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void buyTicket(int seatNumber) throws NoSeatAvailableException {
+        if (seatNumber < 1 || seatNumber > ticket.numberOfSeats) {
+            throw new NoSeatAvailableException("Invalid Seat Number");
+        }
+        int index = seatNumber - 1;
+        if (!ticket.seatAvailability[index]) {
+            throw new NoSeatAvailableException("No seats available for the requested ticket");
+        }
+        ticket.seatAvailability[index] = false;
+        System.out.println("Ticket bought for date " + ticket.getDate() + ", time " + ticket.getTime() + ", seat number " + seatNumber);
+    }
+
+    public void returnTicket(int seatNumber) {
+        if (seatNumber < 1 || seatNumber > ticket.numberOfSeats) {
+            System.out.println("Invalid Seat Number");
+            return;
+        }
+        int index = seatNumber - 1;
+        ticket.seatAvailability[index] = true;
+        System.out.println("Ticket returned for seat number " + seatNumber);
+    }
+
+    public static void main(String[] args) {
+        TheaterSystem theater = new TheaterSystem("April 20", "1:00 PM");
+        try {
+            theater.buyTicket(1);
+            theater.buyTicket(1); // This should throw an exception
+        } catch (NoSeatAvailableException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
