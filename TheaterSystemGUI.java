@@ -1,6 +1,7 @@
 package ArtistTheaterSystem;
 
 import javax.swing.*;
+import javax.swing.JButton;
 
 import ArtistTheaterSystem.TheaterSystem.NoSeatAvailableException;
 
@@ -8,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
+
 
 public class TheaterSystemGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -19,6 +21,7 @@ public class TheaterSystemGUI extends JFrame {
     private JComboBox<String> seatNumberComboBox;
 
     public TheaterSystemGUI() {
+    	theaterSystem = new TheaterSystem("April 20", "1:00 PM");
         setLayout(new FlowLayout());
 
         add(new JLabel("Date:"));
@@ -32,11 +35,10 @@ public class TheaterSystemGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String date = dateField.getText();
                 String time = timeField.getText();
-                theaterSystem = new TheaterSystem(date, time);
                 if (date.equals("04-20-2024")) {
-                    outputArea.append("Show Available on 04-20:\nShow time: 1:00 PM\n");
+                    outputArea.append("Kung Fu Panda 4\n Available on 04-20:\nShow time: 1:00 PM\n");
                 } else if (date.equals("04-28-2024")) {
-                    outputArea.append("Show Available on 04-28:\nShow times: 8:00 PM\n");
+                    outputArea.append("Kung Fu Panda 4\n Available on 04-28:\nShow times: 8:00 PM\n");
                 } else {
                     outputArea.append("No show Available! \n Choose Another Date \n");
                 }
@@ -68,7 +70,6 @@ public class TheaterSystemGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String date = dateField.getText();
                 String time = timeField.getText();
-                theaterSystem = new TheaterSystem(date, time);
                 String selectedSeat = (String) seatNumberComboBox.getSelectedItem();
                 int seatNumber = Integer.parseInt(selectedSeat);
                 try {
@@ -77,10 +78,12 @@ public class TheaterSystemGUI extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-                boolean isFull = theaterSystem.isArtistTheaterFull();
-                if (isFull) {
+                boolean isFull = theaterSystem.checkseat(seatNumber);
+               if (isFull) {
+            	   System.out.print(isFull);
                     outputArea.append("The theater seat is NOT available..\n");
                 } else {
+                	System.out.print(isFull);
                     outputArea.append("The theater seat is available.\n");
                 }
             
@@ -97,15 +100,10 @@ public class TheaterSystemGUI extends JFrame {
         });
         add(createShowButton);
         add(Box.createVerticalStrut(20));
-        
-      
-        
-       
-        //add(new JLabel("Seat Number:"));
-        //seatNumberField = new JTextField(10);
-        //add(seatNumberField);
-        
+ 
 
+
+        
         JButton buyTicketButton = new JButton("Buy Ticket");
         buyTicketButton.addActionListener(new ActionListener() {
             @Override
@@ -118,7 +116,7 @@ public class TheaterSystemGUI extends JFrame {
                     String time = timeField.getText();
                     outputArea.append("Show Confirmed! \n " + date + ":" + time +"\n Seat Number = " + seatNumber + "\n");
                 } catch (TheaterSystem.NoSeatAvailableException ex) {
-                    outputArea.append(ex.getMessage() + "\n");
+                	outputArea.append("Seat unavailable for the requested show on " + dateField.getText() + " at " + timeField.getText() + ". Please choose a different seat.\n");
                 }
             }
         });
@@ -126,14 +124,16 @@ public class TheaterSystemGUI extends JFrame {
         
         
         
-        
         JButton returnTicketButton = new JButton("Return Ticket");
         returnTicketButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int seatNumber = Integer.parseInt(seatNumberField.getText());
+            	String selectedSeat = (String) seatNumberComboBox.getSelectedItem();
+                int seatNumber = Integer.parseInt(selectedSeat);
                 theaterSystem.returnTicket(seatNumber);
                 outputArea.append("Ticket returned for seat number " + seatNumber + "\n");
+                // Update the GUI to display the current state of purchasedSeats
+                updatePurchasedSeatsDisplay();
             }
         });
         add(returnTicketButton);
@@ -149,13 +149,9 @@ public class TheaterSystemGUI extends JFrame {
                 
                 // Clear the output area
                 outputArea.setText("");
+                // Update the GUI to display the current state of purchasedSeats
+                updatePurchasedSeatsDisplay();
                
-                // Display the last purchased seat number
-                Set<Integer> purchasedSeats = theaterSystem.getPurchasedSeats();
-                updatePurchasedSeatsDisplay(purchasedSeats);
-                
-                
-                // Add any other initialization or setup logic here
             }
         });
         add(nextPurchaseButton);
@@ -168,6 +164,15 @@ public class TheaterSystemGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
+    public void updatePurchasedSeatsDisplay() {
+        Set<Integer> purchasedSeats = theaterSystem.getPurchasedSeats();
+        System.out.println("Updating purchased seats display: " + purchasedSeats); // Debug statement
+        outputArea.append("Purchased Seats:\n");
+        for (int seat : purchasedSeats) {
+            outputArea.append(seat + "\n");
+        }
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -176,11 +181,5 @@ public class TheaterSystemGUI extends JFrame {
                 new TheaterSystemGUI();
             }
         });
-    }
-    public void updatePurchasedSeatsDisplay(Set<Integer> purchasedSeats) {
-        outputArea.append("Purchased Seats:\n");
-        for (int seat : purchasedSeats) {
-            outputArea.append(seat + "\n");
-        }
     }
 }
