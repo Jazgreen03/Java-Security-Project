@@ -74,7 +74,7 @@ public class TheaterSystem {
 	        }
 			return isSeatAvailable;
 	    }
-	    public boolean isArtistTheaterFull() {
+	    public boolean isTheaterFull() {
 	    	    // Check if all seats have been purchased
 	    	    for (int i = 1; i <= ticket.numberOfSeats; i++) {
 	    	        if (purchasedSeats.contains(i)) {
@@ -84,43 +84,25 @@ public class TheaterSystem {
 	    	    }
 	    	    return true; // All seats have been purchased
 	    	}
-	        //for (boolean seat : ticket.seatAvailability) {
-	         //   if (seat) {
-	        //        return false;
-	         //   }
-	       // }
-	       // return true;
-	    //}
-	    //private HashSet<Integer> purchasedSeats = new HashSet<>();
+	        
 	    public Set<Integer> getPurchasedSeats() {
 	        return purchasedSeats;
 	    }
 	    
-	    public void displayPurchasedSeats() {
-	        System.out.println("Purchased Seats:");
-	        for (int seat : purchasedSeats) {
-	            System.out.println(seat);
-	        }
-	    }
+	  
 	    
 	    public void requestseat(int seatNumber) throws NoSeatAvailableException {
 	    	purchasedSeats.add(seatNumber);
 	    	
 	    }
-	    public void Removeseat(int seatNumber) throws NoSeatAvailableException {
-	    	purchasedSeats.remove(seatNumber);
+	    public boolean isArtistTheaterFull() {
+	        return purchasedSeats.size() >= 30;
 	    }
 	    
-	    
 	    public void buyTicket(int seatNumber) throws NoSeatAvailableException {
-	    	
-	        if (seatNumber < 1 || seatNumber > ticket.numberOfSeats) {
+	    	if (seatNumber < 1 || seatNumber > ticket.numberOfSeats) {
 	            throw new NoSeatAvailableException("Invalid Seat Number");
 	        }
-	       // if (purchasedSeats.contains(seatNumber)) {
-	          //  throw new NoSeatAvailableException("Seat " + seatNumber + " has already been purchased! Choose a different seat.");
-	       // }
-
 	        int index = seatNumber - 1;
 	        if (!ticket.seatAvailability[index]) {
 	            throw new NoSeatAvailableException("No seats available for the requested ticket! Choose a different show.");
@@ -134,10 +116,9 @@ public class TheaterSystem {
 	            return;
 	        }
 	        purchasedSeats.remove(seatNumber);
-	        System.out.print(purchasedSeats);
 	        int index = seatNumber - 1;
 	        ticket.seatAvailability[index] = true;
-	        System.out.println("Ticket returned for seat number " + seatNumber);
+	        System.out.println("Ticket returned for seat number " + seatNumber); //debugging
 	    }
 
 	    public static void main(String[] args) {
