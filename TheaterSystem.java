@@ -63,11 +63,22 @@ public class TheaterSystem {
 	    public TheaterSystem(String date, String time) {
 	        this.ticket = new Ticket(date, time);
 	    }
-
+	    
+	    public boolean checkseat(int seatNum) {
+	    	boolean isSeatAvailable = false;
+	        for (Integer seat : purchasedSeats) {
+	            if (seat == seatNum) {
+	                isSeatAvailable = true;
+	                break; // Found a match, no need to continue checking
+	            }
+	        }
+			return isSeatAvailable;
+	    }
 	    public boolean isArtistTheaterFull() {
 	    	    // Check if all seats have been purchased
 	    	    for (int i = 1; i <= ticket.numberOfSeats; i++) {
-	    	        if (!purchasedSeats.contains(i)) {
+	    	        if (purchasedSeats.contains(i)) {
+	    	        	System.out.print((i));
 	    	            return false; // At least one seat is available
 	    	        }
 	    	    }
@@ -96,11 +107,13 @@ public class TheaterSystem {
 	    	purchasedSeats.add(seatNumber);
 	    	
 	    }
-	   
+	    public void Removeseat(int seatNumber) throws NoSeatAvailableException {
+	    	purchasedSeats.remove(seatNumber);
+	    }
 	    
 	    
 	    public void buyTicket(int seatNumber) throws NoSeatAvailableException {
-	    	//purchasedSeats.add(seatNumber);
+	    	
 	        if (seatNumber < 1 || seatNumber > ticket.numberOfSeats) {
 	            throw new NoSeatAvailableException("Invalid Seat Number");
 	        }
@@ -120,6 +133,8 @@ public class TheaterSystem {
 	            System.out.println("Invalid Seat Number");
 	            return;
 	        }
+	        purchasedSeats.remove(seatNumber);
+	        System.out.print(purchasedSeats);
 	        int index = seatNumber - 1;
 	        ticket.seatAvailability[index] = true;
 	        System.out.println("Ticket returned for seat number " + seatNumber);
